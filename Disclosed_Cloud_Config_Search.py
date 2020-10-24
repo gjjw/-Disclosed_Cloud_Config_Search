@@ -10,7 +10,7 @@
 # python3 Current_Script.py <REPORT_FILE_FROM_cloud_enum> <SCRIPT_OUTPUT_FILE>
 
 try: 
-    from googlesearch import search 
+    import googlesearch
 except ImportError: 
     print("Google library not found, try pip install google")
 
@@ -18,6 +18,7 @@ import sys
 import requests
 import _thread
 import time
+import os
 
 ftoread=sys.argv[1] #read cloud_enum output file as an argument
 ftowrite=sys.argv[2] #read output file name as an argument
@@ -27,14 +28,14 @@ wfile.write("Script started as: " + sys.argv[0] +" "+ ftoread +" "+ ftowrite +"\
 print("Script started as: " + sys.argv[0] +" "+ ftoread +" "+ ftowrite +"\n")
 
 # url content check function
-def urlcontent(urlstr, srchstr):
+def urlcontent(urlstr, srchstr):    
     urltext=""
     urlcon=""
     txtpos=""
     txtstart=""
     txtend=""
     txt=""
-    time.sleep(1) #delay for better sync of the threads
+    time.sleep(0.5) #delay for better sync of the threads
     try:
         urlcon = requests.get(urlstr, allow_redirects=True)
         urltext = str(urlcon.content)
@@ -73,14 +74,14 @@ def urlcontent(urlstr, srchstr):
 def queryfunc(searchforstr):
     
     #define file types and Google query syntax here
-    #query = searchforstr + " (filetype:config | filetype:txt | "
-    #query = query + "filetype:xml | filetype:json)"
-    
-    query = searchforstr + " (filetype:config | filetype:json)"
-    
+    query = searchforstr + " (filetype:config | filetype:txt | "
+    query = query + "filetype:xml | filetype:json)"
+        
     print("Querying Google for: " + query)
     
-    for reslink in search(query, pause=10): #adjust nr of returned links (add ", stop=NR") and pause here
+    #os.remove("/home/kali/.google-cookie")  #manipulate with google cookies to prevent lockout
+       
+    for reslink in googlesearch.search(query, tld='com', user_agent=googlesearch.get_random_user_agent(), start=0, pause=30): #adjust nr of returned links (add ", stop=NR, num=NR") and pause here
         print("Checking content of: " + reslink)
         _thread.start_new_thread (urlcontent,(reslink, searchforstr))
 
@@ -89,7 +90,7 @@ rfile = open(ftoread, "r")
 for line in rfile:
     line=line.strip()
     
-    #list patterns for the strings to read in the input file
+    #list patterns for the strings to read from the input file
     if ("Protected S3 Bucket:" in line) or \
        ("HTTP-OK Storage Account:" in line) or \
        ("HTTPS-Only Storage Account:" in line) or \
@@ -116,3 +117,4 @@ rfile.close()
 wfile.close()
         
         
+
