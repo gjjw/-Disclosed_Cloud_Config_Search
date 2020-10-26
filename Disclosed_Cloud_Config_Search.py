@@ -9,22 +9,34 @@
 # this script use:
 # python3 Current_Script.py <REPORT_FILE_FROM_cloud_enum> <SCRIPT_OUTPUT_FILE>
 
-try: 
-    import googlesearch
-except ImportError: 
-    print("Google library not found, try pip install google")
 
 import sys
 import requests
 import _thread
 import time
 import os
+import importlib
+import random
+
+try: 
+    import googlesearch
+except ImportError: 
+    print("Google library not found, try pip install google")
+
+# settings for Google lockout avoidance
+retrbefp = 3  # nr of retries before pause
+pvalue = 120  # pause in seconds
+restoret = 50 # results for Google to return
+
+pcount = 0
+sflag = True
 
 ftoread=sys.argv[1] #read cloud_enum output file as an argument
 ftowrite=sys.argv[2] #read output file name as an argument
 
 wfile = open(ftowrite, "w")
 wfile.write("Script started as: " + sys.argv[0] +" "+ ftoread +" "+ ftowrite +"\n")
+wfile.flush()
 print("Script started as: " + sys.argv[0] +" "+ ftoread +" "+ ftowrite +"\n")
 
 # url content check function
@@ -35,7 +47,9 @@ def urlcontent(urlstr, srchstr):
     txtstart=""
     txtend=""
     txt=""
+    
     time.sleep(0.5) #delay for better sync of the threads
+    
     try:
         urlcon = requests.get(urlstr, allow_redirects=True)
         urltext = str(urlcon.content)
@@ -65,27 +79,27 @@ def urlcontent(urlstr, srchstr):
             
             print(txt + "\n")
             wfile.write(txt + "\n")
+            wfile.flush()
             
     except:
         pass
 
 
 # google search function
-def queryfunc(searchforstr):
+def queryfunc(searchforstr, uagent, rtr):
     
     #define file types and Google query syntax here
-    query = searchforstr + " (filetype:config | filetype:txt | "
-    query = query + "filetype:xml | filetype:json)"
-        
-    print("Querying Google for: " + query)
+    query = searchforstr + " (filetype:config | filetype:xml | filetype:json)"
     
-    #os.remove("/home/kali/.google-cookie")  #manipulate with google cookies to prevent lockout
-       
-    for reslink in googlesearch.search(query, tld='com', user_agent=googlesearch.get_random_user_agent(), start=0, pause=30): #adjust nr of returned links (add ", stop=NR, num=NR") and pause here
+    rpausev = random.randint(1, 5)
+    
+    print("\nQuerying Google for: " + query + "\n")
+    
+    for reslink in googlesearch.search(query, tld='com', user_agent=uagent, start=0, stop=rtr, num=rtr, pause=rpausev): #adjust nr of returned links (add ", stop=NR, num=NR") and pause here
         print("Checking content of: " + reslink)
         _thread.start_new_thread (urlcontent,(reslink, searchforstr))
 
-# read and process input file
+#read and process input file
 rfile = open(ftoread, "r")
 for line in rfile:
     line=line.strip()
@@ -110,11 +124,32 @@ for line in rfile:
         while line[-1]=="/":
             line=line[0:len(line)-1] 
         
-        queryfunc(line)
+        # tricks to prevent lockout by Google
+        if pcount > 3 or sflag:
+        
+            if os.path.isfile(os.getenv("HOME") + "/.google-cookie"):
+                coockf = open(os.getenv("HOME") + "/.google-cookie", "w")
+                coockf.write("")
+                coockf.flush()
+                coockf.close()
+                time.sleep(1)
+            
+            importlib.reload(googlesearch)
+            duagent = googlesearch.get_random_user_agent()
+            
+            if sflag:
+                sflag = False
+                pcount += 1
+            else:
+                print("\nPause " + str(pvalue) + " seconds after " + str(pcount) + " requests to Google...\n")
+                time.sleep(pvalue)
+                pcount = 0
+                
+        else:
+            pcount += 1
+                
+        queryfunc(line, duagent, restoret)
         
 #closing both files
 rfile.close()
 wfile.close()
-        
-        
-
