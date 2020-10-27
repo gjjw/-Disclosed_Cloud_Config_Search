@@ -24,7 +24,7 @@ except ImportError:
     print("Google library not found, try pip install google")
 
 # settings for Google lockout avoidance
-retrbefp = 3  # nr of retries before pause
+retrbefp = 2  # nr of retries before pause
 pvalue = 120  # pause in seconds
 restoret = 50 # results for Google to return
 
@@ -125,7 +125,7 @@ for line in rfile:
             line=line[0:len(line)-1] 
         
         # tricks to prevent lockout by Google
-        if pcount > retrbefp or sflag:
+        if pcount >= retrbefp or sflag:
         
             if os.path.isfile(os.getenv("HOME") + "/.google-cookie"):
                 coockf = open(os.getenv("HOME") + "/.google-cookie", "w")
@@ -141,7 +141,7 @@ for line in rfile:
                 sflag = False
                 pcount += 1
             else:
-                print("\nPause " + str(pvalue) + " seconds after " + str(pcount-1) + " requests to Google...\n")
+                print("\nPause " + str(pvalue) + " seconds after " + str(pcount) + " requests to Google...\n")
                 time.sleep(pvalue)
                 pcount = 0
                 
