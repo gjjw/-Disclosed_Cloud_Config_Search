@@ -28,7 +28,7 @@ retrbefp = 2  # nr of retries before pause
 pvalue = 120  # pause in seconds
 restoret = 50 # results for Google to return
 
-pcount = 0
+pcount = 1
 sflag = True
 
 ftoread=sys.argv[1] #read cloud_enum output file as an argument
@@ -125,7 +125,7 @@ for line in rfile:
             line=line[0:len(line)-1] 
         
         # tricks to prevent lockout by Google
-        if pcount >= retrbefp or sflag:
+        if pcount > retrbefp or sflag:
         
             if os.path.isfile(os.getenv("HOME") + "/.google-cookie"):
                 coockf = open(os.getenv("HOME") + "/.google-cookie", "w")
@@ -139,11 +139,10 @@ for line in rfile:
             
             if sflag:
                 sflag = False
-                pcount += 1
             else:
                 print("\nPause " + str(pvalue) + " seconds after " + str(pcount) + " requests to Google...\n")
                 time.sleep(pvalue)
-                pcount = 0
+                pcount = 1
                 
         else:
             pcount += 1
