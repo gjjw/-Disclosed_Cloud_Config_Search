@@ -89,7 +89,7 @@ def urlcontent(urlstr, srchstr):
 def queryfunc(searchforstr, uagent, rtr):
     
     #define file types and Google query syntax here
-    query = "intext:" + searchforstr + " (filetype:config | filetype:xml | filetype:json |  filetype:ini | filetype:ps1 | filetype:yaml | filetype:yml | filetype:log | filetype:cmd)"
+    query = "intext:" + searchforstr + " (filetype:config | filetype:xml | filetype:json | filetype:ini | filetype:ps1 | filetype:yaml | filetype:yml | filetype:log | filetype:cmd)"
     
     rpausev = random.randint(1, 5)
     
