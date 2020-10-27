@@ -25,7 +25,7 @@ except ImportError:
 
 # settings for Google lockout avoidance
 retrbefp = 2  # nr of retries before pause
-pvalue = 120  # pause in seconds
+pvalue = 120  # pause in seconds (reliable Google threshold seems to be 120 for 1 request)
 restoret = 100 # results for Google to return
 
 pcount = 1
