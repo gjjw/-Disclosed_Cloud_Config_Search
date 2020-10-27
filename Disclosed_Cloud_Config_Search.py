@@ -24,7 +24,7 @@ except ImportError:
     print("Google library not found, try pip install google")
 
 # settings for Google lockout avoidance
-retrbefp = 2  # nr of retries before pause
+retrbefp = 1  # nr of retries before pause
 pvalue = 120  # pause in seconds (reliable Google threshold seems to be 120 for 1 request)
 restoret = 100 # results for Google to return
 
