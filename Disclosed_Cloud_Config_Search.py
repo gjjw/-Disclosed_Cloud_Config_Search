@@ -26,7 +26,7 @@ except ImportError:
 # settings for Google lockout avoidance
 retrbefp = 2  # nr of retries before pause
 pvalue = 120  # pause in seconds
-restoret = 50 # results for Google to return
+restoret = 100 # results for Google to return
 
 pcount = 1
 sflag = True
@@ -89,7 +89,7 @@ def urlcontent(urlstr, srchstr):
 def queryfunc(searchforstr, uagent, rtr):
     
     #define file types and Google query syntax here
-    query = searchforstr + " (filetype:config | filetype:xml | filetype:json)"
+    query = "intext:" + searchforstr + " (filetype:config | filetype:xml | filetype:json |  filetype:ini | filetype:ps1 | filetype:yaml | filetype:yml | filetype:log | filetype:cmd)"
     
     rpausev = random.randint(1, 5)
     
@@ -125,7 +125,7 @@ for line in rfile:
             line=line[0:len(line)-1] 
         
         # tricks to prevent lockout by Google
-        if pcount > retrbefp or sflag:
+        if pcount >= retrbefp or sflag:
         
             if os.path.isfile(os.getenv("HOME") + "/.google-cookie"):
                 coockf = open(os.getenv("HOME") + "/.google-cookie", "w")
