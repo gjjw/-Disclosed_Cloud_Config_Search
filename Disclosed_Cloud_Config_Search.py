@@ -97,7 +97,7 @@ def queryfunc(searchforstr, uagent, rtr):
     
     for reslink in googlesearch.search(query, tld='com', user_agent=uagent, start=0, stop=rtr, num=rtr, pause=rpausev): #adjust nr of returned links (add ", stop=NR, num=NR") and pause here
         print("Checking content of: " + reslink)
-        _thread.start_new_thread (urlcontent,(reslink, searchforstr))
+        _thread.start_new_thread (urlcontent,(reslink.strip(), searchforstr))
 
 #read and process input file
 rfile = open(ftoread, "r")
@@ -147,7 +147,7 @@ for line in rfile:
         else:
             pcount += 1
                 
-        queryfunc(line, duagent, restoret)
+        queryfunc(line.strip(), duagent.strip(), restoret)
         
 #closing both files
 rfile.close()
